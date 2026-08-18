@@ -39,7 +39,7 @@ export default async function PlaylistDetailPage({
     notFound();
   }
 
-  const items = db
+  const items = (db
     .select({
       itemId: watchlistItems.id,
       orderIndex: watchlistItems.orderIndex,
@@ -55,7 +55,16 @@ export default async function PlaylistDetailPage({
     .leftJoin(users, eq(videos.uploaderId, users.id))
     .where(eq(watchlistItems.watchlistId, id))
     .orderBy(asc(watchlistItems.orderIndex), desc(watchlistItems.addedAt))
-    .all();
+    .all()) as Array<{
+    itemId: string;
+    orderIndex: number;
+    addedAt: string;
+    videoId: string;
+    videoTitle: string;
+    videoFilePath: string;
+    videoCreatedAt: string;
+    uploaderName: string | null;
+  }>;
 
   const firstVideo = items[0];
 

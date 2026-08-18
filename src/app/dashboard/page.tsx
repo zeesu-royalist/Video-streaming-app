@@ -6,12 +6,8 @@ import { videos, documents } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import DeleteVideoButton from "@/components/DeleteVideoButton";
 import DeleteDocumentButton from "@/components/DeleteDocumentButton";
-<<<<<<< HEAD
-import { getDocumentUrl } from "@/lib/upload";
-import MyListSection from "@/components/MyListSection";
-=======
 import { getDocumentUrl, getVideoThumbnailUrl } from "@/lib/upload";
->>>>>>> e5d9491 (Duration based comment, adding thumbnail system, progress bar for uploading, optimised for fast uploading, allow long video upload.)
+import MyListSection from "@/components/MyListSection";
 
 export const dynamic = "force-dynamic";
 
@@ -21,21 +17,23 @@ export default async function DashboardPage() {
 
   const isSuperAdmin = session.user.role === "SUPER_ADMIN";
 
-  const myVideos = isSuperAdmin
-    ? db
-        .select()
-        .from(videos)
-        .where(eq(videos.uploaderId, session.user.id))
-        .orderBy(desc(videos.createdAt))
-        .all()
-    : [];
+  const myVideos = (
+    isSuperAdmin
+      ? db
+          .select()
+          .from(videos)
+          .where(eq(videos.uploaderId, session.user.id))
+          .orderBy(desc(videos.createdAt))
+          .all()
+      : []
+  ) as (typeof videos.$inferSelect)[];
 
-  const myDocuments = db
+  const myDocuments = (db
     .select()
     .from(documents)
     .where(eq(documents.uploaderId, session.user.id))
     .orderBy(desc(documents.createdAt))
-    .all();
+    .all()) as (typeof documents.$inferSelect)[];
 
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-12 py-6 flex flex-col gap-12">
@@ -65,7 +63,6 @@ export default async function DashboardPage() {
               <span>+ Upload Video</span>
             </Link>
           </div>
-<<<<<<< HEAD
 
           {myVideos.length === 0 ? (
             <div className="p-8 rounded-2xl border border-neutral-800/80 bg-neutral-900/25 backdrop-blur-md text-center">
@@ -73,66 +70,49 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {myVideos.map((v) => (
-=======
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {myVideos.map((v) => {
-              const thumbUrl = v.thumbnailPath || (v.filePath ? getVideoThumbnailUrl(v.filePath) : "");
-              return (
->>>>>>> e5d9491 (Duration based comment, adding thumbnail system, progress bar for uploading, optimised for fast uploading, allow long video upload.)
-                <div
-                  key={v.id}
-                  className="group rounded-2xl border border-neutral-800/80 bg-neutral-900/25 hover:border-neutral-700/60 hover:bg-neutral-900/40 backdrop-blur-md shadow-lg overflow-hidden transition-all duration-300 flex flex-col"
-                >
-                  <Link href={`/videos/${v.id}`}>
-<<<<<<< HEAD
-                    <div className="aspect-video bg-neutral-950/40 border-b border-neutral-900/60 flex items-center justify-center text-neutral-600 text-3xl relative overflow-hidden shrink-0">
-                      <span className="group-hover:scale-110 group-hover:text-[#E50914] transition-all duration-300">▶</span>
-=======
-                    <div className="aspect-video bg-neutral-950/60 border-b border-neutral-900/80 flex items-center justify-center text-neutral-600 text-3xl relative overflow-hidden shrink-0">
-                      {thumbUrl ? (
-                        <img
-                          src={thumbUrl}
-                          alt={v.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <span className="group-hover:scale-110 group-hover:text-[#E50914] transition-all duration-300">▶</span>
-                      )}
-                      <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
-                        <div className="w-10 h-10 rounded-full bg-[#E50914]/90 text-white flex items-center justify-center pl-0.5 shadow-md">
-                          ▶
+              {myVideos.map((v) => {
+                const thumbUrl = v.thumbnailPath || (v.filePath ? getVideoThumbnailUrl(v.filePath) : "");
+                return (
+                  <div
+                    key={v.id}
+                    className="group rounded-2xl border border-neutral-800/80 bg-neutral-900/25 hover:border-neutral-700/60 hover:bg-neutral-900/40 backdrop-blur-md shadow-lg overflow-hidden transition-all duration-300 flex flex-col"
+                  >
+                    <Link href={`/videos/${v.id}`}>
+                      <div className="aspect-video bg-neutral-950/60 border-b border-neutral-900/80 flex items-center justify-center text-neutral-600 text-3xl relative overflow-hidden shrink-0">
+                        {thumbUrl ? (
+                          <img
+                            src={thumbUrl}
+                            alt={v.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <span className="group-hover:scale-110 group-hover:text-[#E50914] transition-all duration-300">▶</span>
+                        )}
+                        <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
+                          <div className="w-10 h-10 rounded-full bg-[#E50914]/90 text-white flex items-center justify-center pl-0.5 shadow-md">
+                            ▶
+                          </div>
                         </div>
                       </div>
->>>>>>> e5d9491 (Duration based comment, adding thumbnail system, progress bar for uploading, optimised for fast uploading, allow long video upload.)
-                    </div>
-                  </Link>
-                  <div className="p-4 flex items-center justify-between gap-3 flex-1">
-                    <Link
-                      href={`/videos/${v.id}`}
-                      className="font-bold text-xs text-neutral-100 truncate hover:text-[#E50914] transition-colors duration-200"
-                    >
-                      {v.title}
                     </Link>
-                    <div className="shrink-0">
-                      <DeleteVideoButton videoId={v.id} />
+                    <div className="p-4 flex items-center justify-between gap-3 flex-1">
+                      <Link
+                        href={`/videos/${v.id}`}
+                        className="font-bold text-xs text-neutral-100 truncate hover:text-[#E50914] transition-colors duration-200"
+                      >
+                        {v.title}
+                      </Link>
+                      <div className="shrink-0">
+                        <DeleteVideoButton videoId={v.id} />
+                      </div>
                     </div>
                   </div>
-                </div>
-<<<<<<< HEAD
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
       )}
-=======
-              );
-            })}
-          </div>
-        )}
-      </section>
->>>>>>> e5d9491 (Duration based comment, adding thumbnail system, progress bar for uploading, optimised for fast uploading, allow long video upload.)
 
       <section>
         <div className="flex items-center justify-between mb-6 pb-2 border-b border-neutral-900">

@@ -3,13 +3,9 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { videos, users, documents } from "@/db/schema";
 import { desc, eq, or, and, like } from "drizzle-orm";
-<<<<<<< HEAD
 import CuratedPlaylistsSection from "@/components/CuratedPlaylistsSection";
-import { getDocumentUrl } from "@/lib/upload";
-=======
 import { getDocumentUrl, getVideoThumbnailUrl } from "@/lib/upload";
 import { formatTimestamp } from "@/lib/format";
->>>>>>> e5d9491 (Duration based comment, adding thumbnail system, progress bar for uploading, optimised for fast uploading, allow long video upload.)
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +39,7 @@ export default async function VideosPage({
     ? or(like(videos.title, `%${q}%`), like(videos.description, `%${q}%`))
     : undefined;
 
-  const rows = db
+  const rows = (db
     .select({
       id: videos.id,
       title: videos.title,
@@ -58,7 +54,16 @@ export default async function VideosPage({
     .leftJoin(users, eq(videos.uploaderId, users.id))
     .where(whereConditions)
     .orderBy(desc(videos.createdAt))
-    .all();
+    .all()) as Array<{
+    id: string;
+    title: string;
+    description: string | null;
+    filePath: string;
+    thumbnailPath: string | null;
+    duration: number | null;
+    createdAt: string;
+    uploaderName: string | null;
+  }>;
 
   let matchingDocs: {
     id: string;
@@ -78,7 +83,7 @@ export default async function VideosPage({
         )
       : eq(documents.visibility, "PUBLIC");
 
-    matchingDocs = db
+    matchingDocs = (db
       .select({
         id: documents.id,
         title: documents.title,
@@ -92,7 +97,15 @@ export default async function VideosPage({
       .leftJoin(users, eq(documents.uploaderId, users.id))
       .where(and(visibilityCondition, like(documents.title, `%${q}%`)))
       .orderBy(desc(documents.createdAt))
-      .all();
+      .all()) as Array<{
+      id: string;
+      title: string;
+      filePath: string;
+      visibility: "PUBLIC" | "PRIVATE";
+      createdAt: string;
+      uploaderId: string;
+      uploaderName: string | null;
+    }>;
   }
 
   return (

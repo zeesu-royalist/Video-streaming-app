@@ -16,30 +16,30 @@ export function getUsersWithCounts() {
     .orderBy(desc(users.createdAt))
     .all();
 
-  const videoCounts = db
+  const videoCounts = (db
     .select({
       uploaderId: videos.uploaderId,
       count: sql<number>`count(*)`,
     })
     .from(videos)
     .groupBy(videos.uploaderId)
-    .all();
+    .all()) as Array<{ uploaderId: string; count: number }>;
 
-  const documentCounts = db
+  const documentCounts = (db
     .select({
       uploaderId: documents.uploaderId,
       count: sql<number>`count(*)`,
     })
     .from(documents)
     .groupBy(documents.uploaderId)
-    .all();
+    .all()) as Array<{ uploaderId: string; count: number }>;
 
   const videoCountMap = new Map(videoCounts.map((v) => [v.uploaderId, v.count]));
   const documentCountMap = new Map(
     documentCounts.map((d) => [d.uploaderId, d.count])
   );
 
-  return allUsers.map((u) => ({
+  return (allUsers as Array<typeof users.$inferSelect>).map((u) => ({
     ...u,
     videoCount: videoCountMap.get(u.id) ?? 0,
     documentCount: documentCountMap.get(u.id) ?? 0,

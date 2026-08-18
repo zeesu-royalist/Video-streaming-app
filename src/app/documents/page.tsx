@@ -46,7 +46,7 @@ export default async function DocumentsPage({
     ? and(visibilityCondition, searchCondition)
     : visibilityCondition;
 
-  const rows = db
+  const rows = (db
     .select({
       id: documents.id,
       title: documents.title,
@@ -60,7 +60,15 @@ export default async function DocumentsPage({
     .leftJoin(users, eq(documents.uploaderId, users.id))
     .where(whereCondition)
     .orderBy(desc(documents.createdAt))
-    .all();
+    .all()) as Array<{
+    id: string;
+    title: string;
+    filePath: string;
+    visibility: "PUBLIC" | "PRIVATE";
+    createdAt: string;
+    uploaderId: string;
+    uploaderName: string | null;
+  }>;
 
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-12 py-6">

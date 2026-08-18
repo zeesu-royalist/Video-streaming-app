@@ -1,4 +1,8 @@
 import { v2 as cloudinary } from "cloudinary";
+import { getVideoThumbnailUrl } from "@/lib/format";
+
+export { getVideoThumbnailUrl };
+
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -52,7 +56,7 @@ export async function saveUploadedFile(
       options.format = "mp4";
     }
 
-    const callback = (error: unknown, result: { secure_url: string; public_id: string; resource_type: string } | undefined) => {
+    const callback = (error: unknown, result: { secure_url: string; public_id: string; resource_type: string; duration?: number } | undefined) => {
       if (error || !result) {
         return reject(error || new Error("Cloudinary upload failed."));
       }
@@ -113,11 +117,3 @@ export function getDocumentUrl(url: string): string {
   if (!url) return url;
   return url;
 }
-<<<<<<< HEAD
-=======
-
-import { getVideoThumbnailUrl } from "@/lib/format";
-
-export { getVideoThumbnailUrl };
-    
->>>>>>> e5d9491 (Duration based comment, adding thumbnail system, progress bar for uploading, optimised for fast uploading, allow long video upload.)

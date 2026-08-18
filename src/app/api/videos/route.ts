@@ -34,11 +34,8 @@ export async function GET() {
   return NextResponse.json({ videos: rows });
 }
 
-<<<<<<< HEAD
-// POST /api/videos -> upload a new video (multipart/form-data) (SUPER_ADMIN ONLY)
-=======
 // POST /api/videos -> upload a new video or save direct Cloudinary metadata
->>>>>>> e5d9491 (Duration based comment, adding thumbnail system, progress bar for uploading, optimised for fast uploading, allow long video upload.)
+
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {

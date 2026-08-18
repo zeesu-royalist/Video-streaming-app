@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
         .orderBy(desc(watchlists.createdAt))
         .all();
 
-      const results = publicWatchlists.map((list) => {
+      const results = publicWatchlists.map((list: { id: string; userId: string; name: string; isPublic: boolean; createdAt: string; creatorName: string | null }) => {
         const items = db
           .select({
             itemId: watchlistItems.id,
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
       .orderBy(desc(watchlists.createdAt))
       .all();
 
-    const results = userWatchlists.map((list) => {
+    const results = userWatchlists.map((list: typeof watchlists.$inferSelect) => {
       const items = db
         .select({
           itemId: watchlistItems.id,
