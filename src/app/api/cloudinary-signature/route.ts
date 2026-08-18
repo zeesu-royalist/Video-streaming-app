@@ -40,8 +40,11 @@ export async function POST(req: Request) {
       timestamp,
       folder,
       public_id: publicId,
-      async: "true",
     };
+
+    if (folder === "videos") {
+      paramsToSign.async = "true";
+    }
 
     const signature = cloudinary.utils.api_sign_request(
       paramsToSign,
@@ -56,7 +59,7 @@ export async function POST(req: Request) {
       folder,
       publicId,
       resourceType,
-      async: "true",
+      ...(folder === "videos" ? { async: "true" } : {}),
     });
 
   } catch (err: any) {

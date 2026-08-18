@@ -134,4 +134,9 @@ function createDbInstance() {
   return drizzle(sqlite, { schema });
 }
 
-export const db = createDbInstance();
+declare global {
+  // eslint-disable-next-line no-var
+  var _db: ReturnType<typeof createDbInstance> | undefined;
+}
+
+export const db = globalThis._db || (globalThis._db = createDbInstance());
